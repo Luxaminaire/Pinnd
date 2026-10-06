@@ -5,3 +5,4 @@ Our eventual goal is for each note to be fully customizable, including size, pos
 text content, and attached images or sound files.
 
 This is for Roya's CS370 class at SSU! This message written by Elliot.
+This is Jack's change in the readme.
