@@ -7,7 +7,7 @@ Project Description: Our project, Pinn-D, is an offline program that allows user
 
 TEST EDIT HERE!! (Elliot)
 =======
-This is for Roya's CS370 class at SSU!
+This is for Roya's CS370 class at SSU!!
 
 This application is locally saved and has multiple elements
 1. Corkboard background that expands indefinitely
