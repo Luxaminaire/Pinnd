@@ -10,3 +10,12 @@ WHEN a pinn's delete button is clicked:
 	remove note from UI
 	Refresh UI
 	return a success response
+	
+	
+Test Cases
+	Delete a note which is visually close to another note
+	Delete an empty note
+	delete an already deleted note
+	
+Brute force algorithm
+O(n)
