@@ -1,0 +1,12 @@
+Delete note
+
+	
+WHEN a pinn's delete button is clicked:
+    Get that Post-it's noteID
+    CALL deleteNote(noteID)
+	
+	deleteNote(nodeID)
+	remove data from database
+	remove note from UI
+	Refresh UI
+	return a success response
