@@ -1,15 +1,19 @@
+- Assume "mouse.X" and "mouse.Y" refer to the mouse's current X and Y position, respectively
+- Assume "pinn.X" and "pinn.Y" refer to the pinn's current X and Y positiom, respectively
+
 [Mouse Listener Function]
-When left mouse button is pressed:
+- When left mouse button is pressed:
   - If on empty board, do nothing
   - If on text, run [Text Editing Function] (defined elsewhere)
   - If directly on edges/corners, run [Pinn Resizing Function] (defined elsewhere)
   - If anywhere else on the Pinn, run [Pinn Movement Function]
 
 [Pinn Movement Function]
-- Subtract the mouse's current X position from the Pinn's current X position, store as "xOffset"
-- Subtract the mouse's current Y position from the Pinn's current Y position, store as "yOffset"
-- Repeat every frame:
-  - Update Pinn's X position to (mouse X position + xOffset)
-  - Update Pinn's Y position to (mouse Y position + yOffset)
-  - If left mouse button is no longer pressed, exit loop
+- Subtract the mouse.X from pinn.X, store as "xOffset"
+- Subtract the mouse.Y from pinn.Y, store as "yOffset"
+- Repeat every frame (or whenever cursor movement is detected, whichever ends up fitting project framework better):
+  - If left mouse button is no longer pressed, exit loop, otherwise:
+    - Update pinn.X to mouse.X + xOffset
+    - Update pinn.Y to mouse.Y + yOffset
+    - Redraw UI (if not handled elsewhere)
 - Inform autosave function that a Pinn's data has been updated (if autosaving whenever a Pinn is changed)
