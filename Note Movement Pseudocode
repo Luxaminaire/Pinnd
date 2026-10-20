@@ -1,0 +1,15 @@
+[Mouse Listener Function]
+When left mouse button is pressed:
+  - If on empty board, do nothing
+  - If on text, run [Text Editing Function] (defined elsewhere)
+  - If directly on edges/corners, run [Pinn Resizing Function] (defined elsewhere)
+  - If anywhere else on the Pinn, run [Pinn Movement Function]
+
+[Pinn Movement Function]
+- Subtract the mouse's current X position from the Pinn's current X position, store as "xOffset"
+- Subtract the mouse's current Y position from the Pinn's current Y position, store as "yOffset"
+- Repeat every frame:
+  - Update Pinn's X position to (mouse X position + xOffset)
+  - Update Pinn's Y position to (mouse Y position + yOffset)
+  - If left mouse button is no longer pressed, exit loop
+- Inform autosave function that a Pinn's data has been updated (if autosaving whenever a Pinn is changed)
