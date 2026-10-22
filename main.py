@@ -36,9 +36,9 @@ def dragPinn(note,xOffset,yOffset):
 testPinn = pinn.textPinn("Test Pinn", "Test Header", "This is a body text!")
 
 clickBoard(300,0) # Test clicking where there is no Pinn
-clickBoard(120,220) # Test clicking the bottom right corner of the test Pinn
-clickBoard(0,0) # Test clicking the center of the test Pinn where text will be displayed
-clickBoard(120,0) # Test clicking near the edge of the test Pinn to initiate a drag
+clickBoard(120,220) # Test clicking the bottom right corner of the test Pinn to ensure resize detection functions
+clickBoard(0,0) # Test clicking the center of the test Pinn where text will be displayed to ensure edit detection functions
+clickBoard(120,0) # Test clicking near the edge of the test Pinn to initiate a drag using dragPinn()
 
 print(f'Pinn "{testPinn.name}" is now at position ({testPinn.xPos}, {testPinn.yPos})!')
 # Should display the Pinn being at the location (130, -30) due to the test drag position
