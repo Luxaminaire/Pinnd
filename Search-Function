@@ -1,4 +1,4 @@
-//I want to search for a keyword and get results
+//"I want to search for a keyword and get results"
 FUNCTION Search(searchQuery, pinnBoard)
 
     //Step 1: Handle empty Search string
