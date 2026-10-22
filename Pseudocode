@@ -1,0 +1,21 @@
+- Assume "mouse.X" and "mouse.Y" refer to the mouse's current X and Y position, respectively
+- Assume "pinn.X" and "pinn.Y" refer to the selected pinn's current X and Y positiom, respectively
+
+[Mouse Listener Function]
+- When left mouse button is pressed:
+  - Run a check to find the highest-layered Pinn currently overlapping the mouse's position
+    - If on empty board, do nothing, otherwise:
+      - Store highest-layered overlapping Pinn as "pinn"
+      - If on text, run editHeader(pinn) (defined elsewhere)
+      - If directly on edges/corners, run resizePinn(pinn) (defined elsewhere)
+      - If anywhere else on the Pinn, run movePinn(pinn)
+
+movePinn(pinn)
+- Subtract the mouse.X from pinn.X, store as "xOffset"
+- Subtract the mouse.Y from pinn.Y, store as "yOffset"
+- Repeat every frame (or whenever cursor movement is detected, whichever ends up fitting project framework better):
+  - If left mouse button is no longer pressed, exit loop, otherwise:
+    - Update pinn.X to mouse.X + xOffset
+    - Update pinn.Y to mouse.Y + yOffset
+    - Redraw UI (if not handled elsewhere)
+- Inform autosave function that a Pinn's data has been updated (if autosaving whenever a Pinn is changed)
