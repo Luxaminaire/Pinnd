@@ -1,0 +1,39 @@
+Delete note
+
+	
+WHEN a pinn's delete button is clicked:
+    Get that Post-it's noteID
+    CALL deleteNote(noteID)
+	
+	deleteNote(nodeID)
+	remove data from database
+	remove note from UI
+	Refresh UI
+	return a success response
+	
+	
+Test Cases
+	Delete a note which is visually close to another note
+	Delete an empty note
+	delete an already deleted note
+	
+Brute force algorithm
+O(n)
+
+Code:
+import sqlite3
+
+def delete_note(note_id):
+    connection = sqlite3.connect("corkboard.db")
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "DELETE FROM StickyNote WHERE noteID = ?",
+        (note_id,)
+    )
+
+    connection.commit()
+    connection.close()
+	
+def delete_note(note_id):
+    deleted = delete_note_db(note_id)
