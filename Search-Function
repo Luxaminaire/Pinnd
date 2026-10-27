@@ -1,36 +1,28 @@
-//"I want to search for a keyword and get results"
-FUNCTION Search(searchQuery, pinnBoard)
+// Define the Search method as part of the PinnBoard class
+METHOD Search(searchQuery)
 
-    //Step 1: Handle empty Search string
-    IF searchQuery is EMPTY
-      return empty list []
+    // Step 1: Handle empty search string
+    IF searchQuery is EMPTY THEN
+        RETURN empty list []
 
-    //Removes case sensitivity issue of Search string
-    search_term = LOWERCASE(keyword)
+    // Step 2: Convert the search query to lowercase to remove case sensitivity
+    search_term = LOWERCASE(searchQuery)
 
-    //Step 3: Initialize empty list of search results
+    // Step 3: Initialize an empty list to hold the matching search results
     search_results = []
 
-    //Step 4: Loop through each pinn in pinnBoard
-    FOR EACH pinn IN pinnBoard:
+    // Step 4: Loop through each pinn in the board's internal pins list
+    FOR EACH pinn IN THIS.pins:
 
-      //Step 5: Convert pinn content and pinn title to lowercase
-        pinn-title = LOWERCASE(pinn.title)
-        pinn-content = LOWERCASE(pinn.content)
+        // Step 5: Convert the current pinn's title and content to lowercase
+        pinn_title = LOWERCASE(pinn.title)
+        pinn_content = LOWERCASE(pinn.content)
 
-//Step 6: Check if lowercase keyword exists in pinn title or in pinn content
-    FOR EACH pinn IN pinnBoard:
-        IF search_term EXISTS in pinn-title OR search-term EXISTS in pinn-content
-            ADD notw to search_results
+        // Step 6: Check if the lowercase search term exists in the title or content
+        IF search_term EXISTS IN pinn_title OR search_term EXISTS IN pinn_content THEN
+            
+            // Step 7: If a match is found, append the actual pinn to the results list
+            ADD pinn TO search_results
 
-//Step 7: If a match is found, append note to search_results
-    RETURN search_results        
-        
-//Return the search_results list
-
-
-      
-      
-
-
-    
+    // Step 8: Return the populated search_results list
+    RETURN search_results
