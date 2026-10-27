@@ -20,13 +20,13 @@ class PinnBoard:
     # Creates an empty list attribute to store the Pinn objects
     self.pinns = []
 
-  # Define a method to add a new Pinn to the board, hinting it expects a Pinn object
+  # Defines a method to add a new Pinn to the board, expecting a Pinn object
   def add_pinn(self, pinn: "Pinn"):
     """Adds a Pinn to the board."""
     # Append the passed Pinn object to the board's internal list of pins
     self.pins.append(pinn)
     
-# Define a method to search the board, expecting a string query and returning a list
+# Defines a method to search the board, expecting a string query and returning a list
     def search(self, search_query: str) -> list:
         """Searches the board for a keyword in titles or content."""
         
