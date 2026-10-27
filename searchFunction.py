@@ -47,24 +47,6 @@ class PinnBoard:
         ]
 
 
-""""""""""""""""""""""""""""""
-""""" FOUND THIS ONLINE: """""
-"""
-class PinnBoard:
-    # ... (init and add_pinn stay the same) ...
-
-    def search(self, searchQuery):
-        if not searchQuery:
-            return []
-            
-        searchTerm = searchQuery.lower()
-        
-        # Returns a new list containing only the pins where the condition is true
-        return [pinn for pinn in self.pinns 
-                if searchTerm in pinn.title.lower() or searchTerm in pinn.content.lower()]
-
-"""
-
 
 
           
