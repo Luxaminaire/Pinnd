@@ -14,8 +14,8 @@ def clickBoard(xPos, yPos):
     hitPinns.sort(key = lambda hitPinn: hitPinn.layer) # Sorted by layer to prioritize the frontmost Pinns
     if len(hitPinns) > 0:
         selectedPinn = hitPinns[0]
-        xOffset = abs(xPos - selectedPinn.xPos)
-        yOffset = abs(yPos - selectedPinn.yPos)
+        xOffset = abs(xPos - selectedPinn.xPos) # Storing these offsets and passing them to the drag function ensures that Pinns remain
+        yOffset = abs(yPos - selectedPinn.yPos) # in the same position relative to the mouse cursor, even if dragged at high speeds.
         xMaxOffset = (selectedPinn.xScale / 2)
         yMaxOffset = (selectedPinn.yScale / 2)
         if xPos >= selectedPinn.xPos + xMaxOffset - pinnResizeTolerance and yPos >= selectedPinn.yPos + yMaxOffset - pinnResizeTolerance:
