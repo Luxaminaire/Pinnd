@@ -46,8 +46,10 @@ class PinnBoard:
             if search_term in pinn.title.lower() or search_term in pinn.content.lower()
         ]
 
+
+""""""""""""""""""""""""""""""
+""""" FOUND THIS ONLINE: """""
 """
-FOUND THIS ONLINE: BASICALLY MY CODE SUCKS AND SOMEONE WAS ABLE TO DO THIS IN 7 LINES
 class PinnBoard:
     # ... (init and add_pinn stay the same) ...
 
