@@ -1,28 +1,51 @@
-// Define the Search method as part of the PinnBoard class
-METHOD Search(searchQuery)
+CLASS Pinn
+    // Constructor initializes a new note
+    CONSTRUCTOR(title, content)
+        SET this.title = title
+        SET this.content = content
+    END CONSTRUCTOR
+END CLASS
 
-    // Step 1: Handle empty search string
-    IF searchQuery is EMPTY THEN
-        RETURN empty list []
 
-    // Step 2: Convert the search query to lowercase to remove case sensitivity
-    search_term = LOWERCASE(searchQuery)
+CLASS PinnBoard
+    // Constructor initializes an empty board
+    CONSTRUCTOR()
+        SET this.pins = EMPTY LIST
+    END CONSTRUCTOR
 
-    // Step 3: Initialize an empty list to hold the matching search results
-    search_results = []
+    // Method to add a new pin to the board
+    METHOD add_pinn(new_pinn)
+        APPEND new_pinn TO this.pins
+    END METHOD
 
-    // Step 4: Loop through each pinn in the board's internal pins list
-    FOR EACH pinn IN THIS.pins:
+    // Method to search for a keyword across all pins
+    METHOD search(search_query)
+        
+        // Handle empty search strings early
+        IF search_query IS EMPTY THEN
+            RETURN EMPTY LIST
+        END IF
 
-        // Step 5: Convert the current pinn's title and content to lowercase
-        pinn_title = LOWERCASE(pinn.title)
-        pinn_content = LOWERCASE(pinn.content)
+        // Convert the search query to lowercase for case-insensitive matching
+        SET search_term = LOWERCASE(search_query)
+        SET search_results = EMPTY LIST
 
-        // Step 6: Check if the lowercase search term exists in the title or content
-        IF search_term EXISTS IN pinn_title OR search_term EXISTS IN pinn_content THEN
+        // Loop through every pin currently on the board
+        FOR EACH pinn IN this.pins
             
-            // Step 7: If a match is found, append the actual pinn to the results list
-            ADD pinn TO search_results
+            // Convert both the title and content to lowercase to check against the search term
+            SET title_lower = LOWERCASE(pinn.title)
+            SET content_lower = LOWERCASE(pinn.content)
 
-    // Step 8: Return the populated search_results list
-    RETURN search_results
+            // Check if the search term exists in either the title or the content
+            IF search_term IS IN title_lower OR search_term IS IN content_lower THEN
+                APPEND pinn TO search_results
+            END IF
+            
+        END FOR
+
+        // Return the final list of matching pins
+        RETURN search_results
+        
+    END METHOD
+END CLASS
