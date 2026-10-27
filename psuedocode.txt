@@ -1,0 +1,33 @@
+User settings
+    Account Creation
+        Prompts user to enter a username, password, and verify password
+        Check to see if username is available
+        Validate password matches verify password
+        Validate password matches security requirements
+        Generate unique user ID
+        Hash the password
+        Record creation dat and time
+        Store user ID, username, password hash, and creation time in SQL database
+        Initialize default user settings
+            - Autosave enabled
+            - Autosave every 5 minutes
+        Text confirms account creation
+    Delete Account
+        Asks user if they are sure they want to delete their Account, associated personal data and that this action can not be undone
+        And verify identity
+        Proceed with a secondary button that they want to continue
+        Deletes User Information:
+            including username, password hash, user ID, and all pinboards and related pins
+        Confirm user deletion
+    Manual Save
+        Saves Pinnboard Information to SQL database
+        Text pop up to tell user that save was successful
+        Preserve unsaved changes so the user can retry
+    Autosave
+        Display current autosave status with a toggle
+            - Grey to the left for off
+                - Slider is greyed out unable to interact
+            - Green to the right for on
+                - Slider available from 5s to 1hr
+            Save values to SQL database
+            Apply changes
