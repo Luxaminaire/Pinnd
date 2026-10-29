@@ -1,0 +1,21 @@
+Testing Plan: Pinns
+
+1. Interacting with Pinns (dragging, resizing, and editing) works with any type of user device, such as keyboard & mouse, keyboard & touchpad, and touchscreen.
+Test Level: Primarily unit tests, checking the individual functions that listen for & utilize user input. A system or end-to-end test could be run after all unit tests pass to ensure that the entire workflow of Pinn interactions works properly regardless of user device.
+Testing Technique: Black-box or grey-box would suit this test best, as the exact inner workings are not as important as the end result. It may be useful to see certain parts of the code, such as whether the functions correctly identify which type of input to listen for, but any issues in detection are likely to be highly apparent and extremely unlikely to cause actual damage to the content of Pinns or the Pinnboard at large.
+
+2. Pinn layering works as intended, preventing multiple Pinns from sharing the same layer and ensuring the topmost Pinn always receives priority when interacting with overlapping Pinns.
+Test Level: Primarily unit tests, checking the individual functions involved in assigning layer IDs to Pinns. An end-to-end test could be run after all unit tests pass to ensure that everything works properly from a visual perspective, as this test is highly related to UI interactions and user display.
+Testing Technique: Grey-box would suit this test best. While most of the inner workings are unimportant for this test, it would likely be useful to directly record each Pinn's internal layer ID, catching potential issues even if they are not immediately visually apparent.
+
+3. Adding and removing PIN protection from individual Pinns properly updates all necessary parameters, and immediately begins protecting the Pinn's contents from unauthorized viewing.
+Test Level: Primarily integration tests, as this will involve communication between individual Pinn functions and the UI at large. A system or end-to-end test could also be run to ensure no unintended behavior arises regardless of how the user goes about interacting with the Pinn before and after changing its protection.
+Testing Technique: White-box testing would be required for this test, as it is imperative to ensure aspects that cannot be verified without looking into the code, such as whether encryption is properly applied & unapplied to the Pinn's contents.
+
+4. Changing a Pinn's PIN without removing it first properly updates the Pinn in real-time and does not lead to any unintended results.
+Test Level: Mix of unit & integration tests, with unit tests ensuring that a preexisting PIN does not cause direct errors in the protection-management function, and integration tests ensuring the change is immediately reflected to the UI when the user attempts to input the PIN.
+Testing Technique: White-box testing would be required to ensure that the PIN's alteration executes smoothly.
+
+5. Deleting a Pinn while it is already being edited does not result in errors or crashes, either by exiting all functions related to the Pinn or by refusing the deletion until the Pinn is fully free.
+Test Level: As this test, by definition, involves the interactions between multiple components, integration tests will be required throughout the process. It would also be wise to run a system test after all integreation tests pass, to ensure that the deletion functions smoothly on a program-wide level. An end-to-end test could also be useful, to ensure the deletion does not feel jarring to the user.
+Testing Technique: White-box testing would likely be the most useful, as it would be easier to spot errors that do not immediately crash the program and ensure that any functions that are forced to exit do so cleanly.
