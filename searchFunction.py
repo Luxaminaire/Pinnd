@@ -1,3 +1,6 @@
+"""
+# This class is replaced by Rosemary's pinn.py file. move on to the search part
+
 # Defines a class Pinn to represent an individual Pinn
 class Pinn:
   """A single Pinn with a title and content."""
@@ -25,7 +28,9 @@ class PinnBoard:
     """Adds a Pinn to the board."""
     # Append the passed Pinn object to the board's internal list of pins
     self.pins.append(pinn)
-    
+'''
+
+
 # Defines a method to search the board, expecting a string query and returning a list
     def search(self, search_query: str) -> list:
         """Searches the board for a keyword in titles or content."""
@@ -45,8 +50,3 @@ class PinnBoard:
             # ...but only include it if the lowercase search term exists in the lowercase title OR lowercase content
             if search_term in pinn.title.lower() or search_term in pinn.content.lower()
         ]
-
-
-
-
-          
