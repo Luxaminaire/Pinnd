@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Corkboard</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="toolbar"><strong>◈ Corkboard</strong><select id="boards" aria-label="Choose board"></select><button id="newBoard">+ Board</button><button id="addNote">+ Note</button><button id="resetView">Center view</button><span id="status">Ready</span><span id="zoomLabel">100%</span></header>
+<main id="viewport" aria-label="Corkboard workspace"><div id="world"><div id="board"></div><div id="notes"></div></div></main>
+<div id="radial" class="hidden" role="menu" aria-label="Note actions"><div class="radial-center">NOTE</div><button data-action="edit" title="Edit">✎<small>Edit</small></button><button data-action="color" title="Color">◉<small>Color</small></button><button data-action="front" title="Bring to front">▣<small>Front</small></button><button data-action="delete" class="danger" title="Delete">⌫<small>Delete</small></button><button data-action="duplicate" title="Duplicate">⧉<small>Copy</small></button><button data-action="back" title="Send to back">▤<small>Back</small></button></div>
+<div id="palette" class="hidden" aria-label="Note colors"></div>
+<dialog id="confirmDialog"><h2>Delete this note?</h2><p>This permanently removes the note and its attached media from this board.</p><div class="dialog-actions"><button id="cancelDelete">Cancel</button><button id="confirmDelete" class="delete-btn">Delete note</button></div></dialog>
+<div id="toast" role="status"></div>
+<script src="app.js"></script></body></html>

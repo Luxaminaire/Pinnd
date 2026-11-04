@@ -1,6 +1,7 @@
+""" Jack Dillon
 Delete note
 
-	
+Pseudocode
 WHEN a pinn's delete button is clicked:
     Get that Post-it's noteID
     CALL deleteNote(noteID)
@@ -19,8 +20,8 @@ Test Cases
 	
 Brute force algorithm
 O(n)
-
-Code:
+Code also available here : https://github.com/Luxaminaire/Pinnd/blob/Jack/delete%20note.txt
+Code:"""
 import sqlite3
 
 def delete_note(note_id):
@@ -37,3 +38,19 @@ def delete_note(note_id):
 	
 def delete_note(note_id):
     deleted = delete_note_db(note_id)
+	
+"""input		note_id — the unique ID of the Post-it note to delete
+Expected output	The note is removed from the SQL database and disappears from the corkboard UI
+Return value	Success or failure, indicating whether the note was deleted
+
+Test case			Input					Expected output
+Normal deletion		note_id = 5 			(exists)	Note 5 is deleted from the database and UI
+Nonexistent note	note_id = 999 			(doesn't exist)	Deletion fails; no other notes are affected
+Invalid ID			note_id = -1			Input is rejected; no deletion occurs
+Repeated deletion	Delete note 5 twice		First deletion succeeds; second reports that the note doesn't exist
+
+Short reflection:
+
+The task I implemented is deleting a note. It was implemented in python. The actions should work, but it relies on 
+a non-implemented note class. It does not significantly diverge from the pseudocode. The edge case is a nonexistent note, 
+modeled as deleting a noteID that doesn't exist. The other edge case is deleting a note twice."""
