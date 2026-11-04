@@ -1,0 +1,68 @@
+#Python unit tests
+
+#These are some tests to make sure some of the note creation functions are running correctly.
+
+#Possible bugs to test for:
+
+-There is a def sizeAdjust() function that checks if an image is larger than the imageNote it is on. If the image is larger than the Pinn, it should change sizeOfImageX and sizeOfImageY to match the image.
+
+-There is a filePathToImage in imageNote. We ought to check if the filepath is valid, and if not, return an error.
+
+-Each note has a noteID that identifies it separately from any other, which we save to a noteArray to track notes. Each noteID needs to be unique, and cannot be null. It's important noteArray retain an order, since layerLevel will depend on it.
+
+-Each note has a location X and Y, corresponding to the top left corner of the note. The Pinnboard's total size starts at an X = 0 to an X = endOfPinnboard, and a Y = 0 to a Y = endOfPinnboard, corresponding to the edge of the Pinnboard (positive Y moves 'downwards'). The X and Y of a note cannot start at a location less than 0. The X of a note's location + its sizeX cannot have a combined value larger than the Pinnboard. The Y of a note's location + its sizeY cannot have a combined value larger than the Pinnboard.
+
+def testFilePath(): TODO
+
+def testNoteID(): TODO
+
+def testNoteLocation():
+boardSizeX = 1000
+boardSizeY = 1000
+
+sizeX = 50
+sizeY = 50
+locationX = 0
+locationY = 0
+
+if locationX < 0
+	print("Expected locationX to be positive, locationX is negative)
+if locationY < 0
+	print("Expected locationY to be positive, locationY is negative)
+if (locationX + sizeX) > 1000
+	print("Right edge of note is out of bounds")
+if (locationY + sizeY) > 1000
+	print("Bottom edge of note is out of bounds")
+
+#End of location testing
+
+
+
+
+def testSize():
+Pinn.sizeX = 100
+Pinn.sizeY = 50
+Pinn.imageSizeX = 100
+Pinn.imageSizeY = 50
+
+print ("Pinn.sizeX is 100, Pinn.sizeY is 50")
+
+Pinn.sizeX = 100
+Pinn.sizeY = 50
+Pinn.imageSizeX = 101
+Pinn.imageSizeY = 51
+
+Pinn.sizeAdjust()
+print("Pinn.sizeX is 101, imageSizeX = 101, Pinn.sizeY = 51, Pinn.ImageSizeY = 101")
+
+Pinn.sizeX = 100
+Pinn.sizeY = 50
+Pinn.imageSizeX = -100
+Pinn.imageSizeY = 50
+
+Pinn.sizeAdjust()
+print("A Pinn.imageSize is negative, and invalid. Pinn.sizeX remains 100, Pinn.sizeY remains 50")
+
+#End of size testing
+
+
