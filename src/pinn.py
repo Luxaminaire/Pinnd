@@ -97,11 +97,11 @@ class textPinn(pinn):
     bodyTextFont = defaultFont
     def __init__(self, name, headerText, bodyText):
         super().__init__(name)
+        self.type = "Text"
         self.headerText = headerText
         self.bodyText = bodyText
         self.xScale = defaultTextPinnWidth
         self.yScale = defaultTextPinnHeight
-        self.type = "Text"
 
     def updateHeader(self, text, size, font, color):
         textUpdateHandler(self, "Header", text, size, font, color)
@@ -119,13 +119,9 @@ class imagePinn(pinn):
     imageSizeY = 0
     def __init__(self, name, captionText, imageFilepath):
         super().__init__(name)
-        self.captionText = captionText
-        self.imageFilepath = imageFilepath # Add a check for the image's specific dimensions later,
-        self.xScale = minImagePinnSize     # with the larger dimension around 300 or 400, and the
-        self.yScale = minImagePinnSize     # smaller one calculated from the image's aspect ratio.
-        self.imageSizeX = 0
-        self.imageSizeY = 0
         self.type = "Image"
+        self.captionText = captionText
+        self.updateImage(imageFilepath)
 
     def updateCaption(self, text, size, font, color):
         textUpdateHandler(self, "Caption", text, size, font, color)
@@ -157,12 +153,10 @@ class audioPinn(pinn):
     audioLength = 0
     def __init__(self, name, headerText, audioFilepath):
         super().__init__(name)
-        self.headerText = headerText
-        self.audioFilepath = audioFilepath
-        self.audioLength = 0 # Replace with a check for the length of the audio file in seconds
-        self.xScale = minAudioPinnWidth + min(self.audioLength, maxAudioPinnWidth)
-        self.yScale = defaultAudioPinnHeight
         self.type = "Audio"
+        self.headerText = headerText
+        self.updateAudio(audioFilepath)
+        self.yScale = defaultAudioPinnHeight
 
     def updateHeader(self, text, size, font, color):
         textUpdateHandler(self, "Header", text, size, font, color)
@@ -172,5 +166,6 @@ class audioPinn(pinn):
         if FAKELEN > 0:
             self.audioLength = FAKELEN
             self.audioFilepath = filepath
+            self.xScale = minAudioPinnWidth + min(self.audioLength, maxAudioPinnWidth)
         else:
             error("Error reading audio file: Read a non-positive length.")
