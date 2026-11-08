@@ -1,0 +1,28 @@
+#"Slots" is what QT uses as listeners.
+
+#How to make a button:
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Pinnboard 1")
+
+        #We made a basic button. TODO: Learn to customize it.
+        self.button = QPushButton("Press Me!")
+        self.button.setCheckable(True)
+        self.button.clicked.connect(self.the_button_was_clicked) #Determines which function is used on click
+
+
+
+        #.setFixedSize(), .setMinimumSize(), and .setMaximumSize() are also possible
+        self.setMinimumSize(QSize(400, 300))
+
+        #Set the central widget of the Window. Button is an attribute of MainWindow, self.button, not just button.
+        self.setCentralWidget(self.button)
+
+    def the_button_was_clicked(self):
+        print("Clicked!")
+        self.button.setText("This makes me happy")
+
