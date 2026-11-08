@@ -1,9 +1,16 @@
 import unittest
+from pathlib import Path
 import pinn
 
 def test_image_size():
-    imagePinn = pinn.imagePinn("Image Pinn","Test",r"C:\Users\Mary\Desktop\TestDim.png")
+    path = Path(__file__).parent / "TestDim.png"
+    imagePinn = pinn.imagePinn("Image Pinn","Test",path)
     assert imagePinn.xScale == 100 and imagePinn.yScale == 250
+
+def test_audio_duration():
+    path = Path(__file__).parent / "TestDur.mp3"
+    audioPinn = pinn.audioPinn("Audio Pinn", "Test", path)
+    assert audioPinn.audioLength == 14.863673469387756
 
 def test_text_parameters():
     textPinn = pinn.textPinn("Parameter Pinn","Test Header","Test Body")
@@ -26,6 +33,7 @@ def test_pinn_deletion():
     assert len(pinn.pinnList) == 0
 
 test_image_size()
+test_audio_duration()
 test_text_parameters()
 test_pinn_movement()
 test_pinn_deletion()
