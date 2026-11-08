@@ -1,9 +1,10 @@
 from logging import error
+from PIL import Image
 
 pinnList = []
 defaultTextPinnWidth = 250
 defaultTextPinnHeight = 450
-minImagePinnSize = 100
+minPinnSize = 100
 maxAudioPinnWidth = 450
 minAudioPinnWidth = 200
 defaultAudioPinnHeight = 100
@@ -63,6 +64,7 @@ class pinn:
     type = "Base"
     backgroundColor = defaultBackgroundColor
     pinnPIN = None
+
     def __init__(self, name):
         self.name = name
         pinnList.append(self)
@@ -73,8 +75,8 @@ class pinn:
         self.yPos = y
 
     def resize(self, x, y):
-        self.xScale = x
-        self.yScale = y
+        self.xScale = max(x, minPinnSize)
+        self.yScale = max(y, minPinnSize)
 
     def delete(self):
         for note in pinnList:
@@ -95,6 +97,7 @@ class textPinn(pinn):
     bodyTextSize = defaultBodySize
     bodyTextColor = defaultTextColor
     bodyTextFont = defaultFont
+
     def __init__(self, name, headerText, bodyText):
         super().__init__(name)
         self.type = "Text"
@@ -117,6 +120,7 @@ class imagePinn(pinn):
     imageFilepath = None
     imageSizeX = 0
     imageSizeY = 0
+
     def __init__(self, name, captionText, imageFilepath):
         super().__init__(name)
         self.type = "Image"
@@ -128,17 +132,30 @@ class imagePinn(pinn):
 
     def readjustSize(self):
         if self.imageSizeX <= 0 or self.imageSizeY <= 0:
-            return -1 # Return a special value to warn the caller that it may need to re-import the image.
+            return -1 # Return a special value to warn the caller that the image is invalid.
         if self.imageSizeX > self.xScale or self.imageSizeY > self.yScale:
             self.xScale = self.imageSizeX
             self.yScale = self.imageSizeY
-            return True # Pinn was successfully resized.
-        return False # Pinn did not need to be resized.
+
+            if self.xScale < minPinnSize: # Resize Pinn if image is too small
+                self.yScale *= minPinnSize / self.xScale
+                self.xScale = minPinnSize
+            if self.yScale < minPinnSize:
+                self.xScale *= minPinnSize / self.yScale
+                self.yScale = minPinnSize
+            return True # Pinn was successfully enlarged to fit image size.
+
+        if self.xScale < minPinnSize: self.xScale = minPinnSize
+        self.yScale = round(self.xScale * (self.imageSizeY / self.imageSizeX))
+        return False # Pinn was set to correct aspect ratio, but not enlarged.
 
     def updateImage(self, filepath):
-        # Write logic to import image from filepath
-        self.imageSizeX = 0 # Replace with image's X & Y size in pixels
-        self.imageSizeY = 0
+        try:
+            with Image.open(filepath) as imageImport:
+                self.imageSizeX = imageImport.size[0]
+                self.imageSizeY = imageImport.size[1]
+        except FileNotFoundError:
+            error("Error importing image to Pinn!")
         if self.readjustSize() == -1:
             error("Error reading image file: Read invalid dimensions!")
         else:
@@ -151,6 +168,7 @@ class audioPinn(pinn):
     headerTextFont = defaultFont
     audioFilepath = None
     audioLength = 0
+
     def __init__(self, name, headerText, audioFilepath):
         super().__init__(name)
         self.type = "Audio"
