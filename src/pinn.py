@@ -1,5 +1,6 @@
 from logging import error
 from PIL import Image
+from just_playback import Playback
 
 pinnList = []
 defaultTextPinnWidth = 250
@@ -106,10 +107,10 @@ class textPinn(pinn):
         self.xScale = defaultTextPinnWidth
         self.yScale = defaultTextPinnHeight
 
-    def updateHeader(self, text, size, font, color):
+    def updateHeader(self, text = '', size = 0, font = '', color = ''):
         textUpdateHandler(self, "Header", text, size, font, color)
 
-    def updateBody(self, text, size, font, color):
+    def updateBody(self, text = '', size = 0, font = '', color = ''):
         textUpdateHandler(self, "Body", text, size, font, color)
 
 class imagePinn(pinn):
@@ -127,7 +128,7 @@ class imagePinn(pinn):
         self.captionText = captionText
         self.updateImage(imageFilepath)
 
-    def updateCaption(self, text, size, font, color):
+    def updateCaption(self, text = '', size = 0, font = '', color = ''):
         textUpdateHandler(self, "Caption", text, size, font, color)
 
     def readjustSize(self):
@@ -157,7 +158,7 @@ class imagePinn(pinn):
         except FileNotFoundError:
             error("Error importing image to Pinn!")
         if self.readjustSize() == -1:
-            error("Error reading image file: Read invalid dimensions!")
+            error("Error reading image file: Could not resolve image size!")
         else:
             self.imageFilepath = filepath
 
@@ -166,6 +167,7 @@ class audioPinn(pinn):
     headerTextSize = defaultHeaderSize
     headerTextColor = defaultTextColor
     headerTextFont = defaultFont
+    audioPlayer = Playback()
     audioFilepath = None
     audioLength = 0
 
@@ -176,14 +178,22 @@ class audioPinn(pinn):
         self.updateAudio(audioFilepath)
         self.yScale = defaultAudioPinnHeight
 
-    def updateHeader(self, text, size, font, color):
+    def updateHeader(self, text = '', size = 0, font = '', color = ''):
         textUpdateHandler(self, "Header", text, size, font, color)
 
     def updateAudio(self, filepath):
-        FAKELEN = 10 # Write logic to import audio from filepath
-        if FAKELEN > 0:
-            self.audioLength = FAKELEN
+        self.audioPlayer.load_file(filepath)
+        self.audioLength =  self.audioPlayer.duration
+
+        if self.audioLength > 0:
             self.audioFilepath = filepath
             self.xScale = minAudioPinnWidth + min(self.audioLength, maxAudioPinnWidth)
         else:
-            error("Error reading audio file: Read a non-positive length.")
+            error("Error reading audio file: Could not resolve audio duration.")
+
+    def play(self, startTime = 0):
+        if startTime != 0: self.audioPlayer.seek(startTime)
+        self.audioPlayer.play()
+    def pause(self): self.audioPlayer.pause()
+    def resume(self): self.audioPlayer.resume()
+    def stop(self): self.audioPlayer.stop()
