@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
 
         #Sets a single central widget for entire window. Can have many buttons.
         self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget);
+        self.setCentralWidget(self.central_widget)
 
 
         #We made a basic button. TODO: Learn to customize it.
@@ -32,9 +32,20 @@ class MainWindow(QMainWindow):
         self.button.setCheckable(True)
         self.button.clicked.connect(self.the_button_was_clicked) #Determines which function is used on click
 
-        self.button2 = QPushButton("Offset button!", self.central_widget)
-        self.button2.setGeometry(150, 0, 200, 100)
-        self.button2.clicked.connect(self.theOtherButton)
+        #MakeImage button
+        self.imageButton = QPushButton("Offset button!", self.central_widget)
+        self.imageButton.setGeometry(100, 0, 100, 100)
+        self.imageButton.clicked.connect(self.makeImagePinn)
+
+        #MakeText button
+        self.textButton = QPushButton("Text Note button!", self.central_widget)
+        self.textButton.setGeometry(100, 100, 100, 100)
+        self.textButton.clicked.connect(self.makeTextPinn)
+
+        #MakeSound button
+        self.soundButton = QPushButton("Sound Pinn \nbutton!", self.central_widget)
+        self.soundButton.setGeometry(0, 100, 100, 100)
+        self.soundButton.clicked.connect(self.makeSoundPinn)
 
 
 
@@ -47,9 +58,17 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("This got changed too!")
 
     #Define a second behavior
-    def theOtherButton(self, checked=False):
-        self.button2.setText("setGeometry: x, y, width, height")
-        self.setWindowTitle("TODO: Come up with better button names")
+    def makeImagePinn(self, checked=False):
+        self.imageButton.setText("This button will\nhandle I.Pinns")
+        self.setWindowTitle("setGeometry: x, y, width, height")
+
+    def makeTextPinn(self, checked=False):
+        self.textButton.setText("Make this create\na text pinn")
+
+    def makeSoundPinn(self, checked=False):
+        self.soundButton.setText("Make this create\na sound pinn")
+
+
 
 
 #One QApplication instance per application
