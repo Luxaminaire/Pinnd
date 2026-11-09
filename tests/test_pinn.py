@@ -14,9 +14,11 @@ def test_audio_duration():
 
 def test_text_parameters():
     textPinn = pinn.textPinn("Parameter Pinn","Test Header","Test Body")
+    textPinn.updateBody(color = '#005533')
     assert textPinn.name == "Parameter Pinn"
     assert textPinn.headerText == "Test Header"
     assert textPinn.bodyText == "Test Body"
+    assert textPinn.bodyTextColor == "#005533"
 
 def test_pinn_movement():
     textPinn = pinn.textPinn("Movement Pinn", "Test", "Test")
@@ -31,9 +33,3 @@ def test_pinn_deletion():
     for note in deleteList:
         note.delete()
     assert len(pinn.pinnList) == 0
-
-test_image_size()
-test_audio_duration()
-test_text_parameters()
-test_pinn_movement()
-test_pinn_deletion()
