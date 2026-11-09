@@ -1,4 +1,5 @@
 import os
+import re
 import time
 from logging import error
 from PIL import Image
@@ -20,17 +21,17 @@ maxBodyLength = 1000
 minFontSize = 6
 maxFontSize = 50
 
-defaultBackgroundColor = "FFAA1B"
-defaultTextColor = "000000"
+defaultBackgroundColor = "#FFAA1B"
+defaultTextColor = "#000000"
 defaultFont = "Arial"
 defaultHeaderSize = 14
 defaultBodySize = 11
 defaultCaptionSize = 12
 
 def assetCreationHandler(filepath):
-    fileName, fileExtension = os.path.splitext(os.path.basename(filepath))
-    assetName = f"{int(time.time())}_{fileName}{fileExtension}"
-    path = Path(__file__).parent / "assets" / assetName
+    fileName, fileExtension = os.path.splitext(os.path.basename(filepath)) # Preserve file extension
+    assetName = f"{int(time.time())}_{fileName}{fileExtension}" # Add timestamp so that multiple Pinns can
+    path = Path(__file__).parent / "assets" / assetName         # import files with the same name.
     newPath = shutil.copyfile(filepath, path)
     return str(newPath)
 
@@ -41,19 +42,22 @@ def textUpdateHandler(pinn, type, text, size, font, color):
     elif type == "Body": maxLength = maxBodyLength
     else: error(f'Invalid text type: {type}')
 
-    if len(text) > maxLength:
-        pinnText = '' # Chop off extra text, will add later
+    if len(text) > maxLength: pinnText = text[:maxLength] # Truncate if needed
     else: pinnText = text
 
     pinnSize = min(max(size, minFontSize), maxFontSize) # Clamps the size to valid values
+
     pinnFont = font # Add logic later to ensure valid font name is used
-    pinnColor = color # Add logic later to ensure valid HEX code is used
+
+    if re.fullmatch(r'^#[0-9a-fA-F]{6}$', color):
+        pinnColor = color # Only update text color if valid hex code is given.
+    else: pinnColor = ''
 
     if type == "Header":
         if text != '': pinn.headerText = pinnText
         if size != 0: pinn.headerTextSize = pinnSize
         if font != '': pinn.headerTextFont = pinnFont
-        if color != '': pinn.headerTextColor = pinnColor
+        if pinnColor != '': pinn.headerTextColor = pinnColor
     if type == "Caption":
         if text != '': pinn.captionText = pinnText
         if size != 0: pinn.captionTextSize = pinnSize
@@ -81,6 +85,10 @@ class pinn:
         self.name = name
         pinnList.append(self)
         self.pinnID = len(pinnList)
+
+    def updateBackgroundColor(self, color):
+        if re.fullmatch(r'^#[0-9a-fA-F]{6}$', color):
+            self.backgroundColor = color  # Only update text color if valid hex code is given.
 
     def move(self, x, y):
         self.xPos = x
