@@ -1,6 +1,10 @@
+import os
+import time
 from logging import error
 from PIL import Image
 from just_playback import Playback
+from pathlib import Path
+import shutil
 
 pinnList = []
 defaultTextPinnWidth = 250
@@ -22,6 +26,13 @@ defaultFont = "Arial"
 defaultHeaderSize = 14
 defaultBodySize = 11
 defaultCaptionSize = 12
+
+def assetCreationHandler(filepath):
+    fileName, fileExtension = os.path.splitext(os.path.basename(filepath))
+    assetName = f"{int(time.time())}_{fileName}{fileExtension}"
+    path = Path(__file__).parent / "assets" / assetName
+    newPath = shutil.copyfile(filepath, path)
+    return str(newPath)
 
 def textUpdateHandler(pinn, type, text, size, font, color):
     maxLength = 0
@@ -128,6 +139,10 @@ class imagePinn(pinn):
         self.captionText = captionText
         self.updateImage(imageFilepath)
 
+    def delete(self):
+        Path(self.imageFilepath).unlink(missing_ok = True)
+        super().delete()
+
     def updateCaption(self, text = '', size = 0, font = '', color = ''):
         textUpdateHandler(self, "Caption", text, size, font, color)
 
@@ -151,16 +166,15 @@ class imagePinn(pinn):
         return False # Pinn was set to correct aspect ratio, but not enlarged.
 
     def updateImage(self, filepath):
+        self.imageFilepath = assetCreationHandler(filepath)
         try:
-            with Image.open(filepath) as imageImport:
+            with Image.open(self.imageFilepath) as imageImport:
                 self.imageSizeX = imageImport.size[0]
                 self.imageSizeY = imageImport.size[1]
         except FileNotFoundError:
             error("Error importing image to Pinn!")
         if self.readjustSize() == -1:
             error("Error reading image file: Could not resolve image size!")
-        else:
-            self.imageFilepath = filepath
 
 class audioPinn(pinn):
     headerText = ""
@@ -178,18 +192,19 @@ class audioPinn(pinn):
         self.updateAudio(audioFilepath)
         self.yScale = defaultAudioPinnHeight
 
+    def delete(self):
+        self.audioPlayer.close()
+        Path(self.audioFilepath).unlink(missing_ok = True)
+        super().delete()
+
     def updateHeader(self, text = '', size = 0, font = '', color = ''):
         textUpdateHandler(self, "Header", text, size, font, color)
 
     def updateAudio(self, filepath):
-        self.audioPlayer.load_file(filepath)
-        self.audioLength =  self.audioPlayer.duration
-
-        if self.audioLength > 0:
-            self.audioFilepath = filepath
-            self.xScale = minAudioPinnWidth + min(self.audioLength, maxAudioPinnWidth)
-        else:
-            error("Error reading audio file: Could not resolve audio duration.")
+        self.audioFilepath = assetCreationHandler(filepath)
+        self.audioPlayer.load_file(self.audioFilepath)
+        self.audioLength = self.audioPlayer.duration
+        self.xScale = minAudioPinnWidth + min(self.audioLength, maxAudioPinnWidth)
 
     def play(self, startTime = 0):
         if startTime != 0: self.audioPlayer.seek(startTime)
