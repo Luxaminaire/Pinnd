@@ -9,8 +9,159 @@ from PySide6.QtCore import QSize, Qt
 #QApplication is needed for events, QWidget has many objects and functions
 from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton
 
-#This subclass lets us further customize our MainWindow and its buttons.
-#MainWindow is our 'background'. We can leave it generic, or add to it using this subclass.
+
+#This is a first attempt at a draggable note class
+#This draggableNote's mouse events are local, they only apply to the widget on top!
+class draggableNote(QWidget): #Custom subclass of QWidget
+    def __init__(self, parent=None): #Constructor. Initialize with (self, checked=False)
+        super().__init__(parent)
+
+        #Drag offset remembers where in a note a user has clicked. VERY relevant for pinpointing where a click happened.
+        self.drag_offset = None
+
+        self.setMinimumSize(100, 75)#Minimum note size
+        self.resize(200, 150)#This is our default size of new notes
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+
+        #Styling! Control color, border, and other things! CSS terms apply here!
+        #Colors are ordered in R G B.
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #fff59d;
+                border: 2px solid #b0b538;
+            }
+        """)
+
+        #Color of the top bar of each note
+        self.topBar = draggableNoteBar(self) #Widget within widget! This is the bar along the top of the note!
+        self.topBar.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True) #Color will not show if this is not included
+        self.topBar.setGeometry(2, 2, self.width() - 4, 25) #All geometry calculations are made relative to the parent note
+        self.topBar.setStyleSheet("""
+            background-color: #d9e458;
+            border: none;
+            """)
+        self.topBar.raise_() #The top bar has to sit ON TOP of the note
+        self.topBar.show()
+
+        #This initiates the resize cube 'handle' at the bottom-right of every bar, allowing resizing
+        self.resizeHandle = noteResize(self)
+        self.resizeHandle.raise_()
+        self.resizeHandle.show()
+        self.resizeHandle.move(
+                    self.width() - self.resizeHandle.width()-2,
+                    self.height() - self.resizeHandle.height()-2
+                )
+
+    def resizeEvent(self, event): #This handles resizing of notes
+        self.topBar.setGeometry(2, 2, self.width() - 4, 25) #The top bar needs to remain consistent across the top!
+
+        self.resizeHandle.move(
+        self.width() - self.resizeHandle.width() - 2,
+        self.height() - self.resizeHandle.height() - 2
+    )
+        super().resizeEvent(event)
+
+
+
+#This is the bar along the top that drags the note around.
+#This should be the blueprint on how to create clickable 'areas' of the pin.
+#Color should be handled by draggableNote itself, not here. This area down here should handle events.
+class draggableNoteBar(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.drag_offset = None
+
+    #This is the "what happens when pressed" event
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:#Use this to determine what key determines the event.
+            # Convert the click position into the note's coordinates
+            self.drag_offset = self.mapToParent(
+                event.position().toPoint()
+            )
+
+            self.parentWidget().raise_() #Bring this pinn above other widgets
+            event.accept()
+
+    #This is the "what happens when held/moved" event
+    def mouseMoveEvent(self, event):
+        if (
+            self.drag_offset is not None #Remember where inside the pinn the mouse was pressed
+            and event.buttons() & Qt.MouseButton.LeftButton 
+        ):
+            note = self.parentWidget()
+
+            current_position = self.mapToParent(
+                event.position().toPoint()
+            )
+
+            new_position = ( #Calculate the note's new position. Calculates new_position based on where the mouse is.
+                note.pos() #Note's current position
+                + current_position #Mouse's current position within the note
+                - self.drag_offset
+            )
+
+            note.move(new_position)
+            event.accept()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.drag_offset = None
+            event.accept()
+
+#This is the noteResize widget! 
+class noteResize(QWidget):
+    def __init__(self, parent=None):
+            super().__init__(parent)
+
+            self.dragStartPosition = None #Keeps track of where the mouse is 'originally'
+            self.originalSize = None
+            self.setFixedSize(16, 16) #This is the clickable resize area
+
+            self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True) #Nothing works without this, put it in every time.
+            #Can change colors of the resize button to keep track of where it is, but can also remove all color too
+            self.setStyleSheet("""
+            QWidget {
+                background-color: #c9b458;
+                border: 1px solid #8f7d2f;
+            }
+        """)
+
+    #These are the mouse press events for pressing, holding, and releasing the mouse.
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.dragStartPosition = event.globalPosition().toPoint()
+            self.originalSize = self.parentWidget().size()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if (self.dragStartPosition is not None
+            and event.buttons() & Qt.MouseButton.LeftButton):
+
+            currentPosition = event.globalPosition().toPoint()
+            movement = currentPosition - self.dragStartPosition
+
+            newWidth = self.originalSize.width() + movement.x()
+            newHeight = self.originalSize.height() + movement.y()
+
+            note = self.parentWidget()
+
+            newWidth = max(newWidth, note.minimumWidth()) #Can't shrink a note smaller than the minimum!
+            newHeight = max(newHeight, note.minimumHeight())
+
+            note.resize(newWidth, newHeight) #Now that the heights and widths are defined, use them here
+            event.accept()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.dragStartPosition = None
+            self.originalSize = None
+            event.accept()
+
+
+
+#This important subclass lets us further customize our MainWindow and its buttons.
+#MainWindow is our 'background'. We can add to it using this class.
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -25,8 +176,11 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
+        #Array of notes! Important for tracking note ID
+        self.noteList = []
 
-        #We made a basic button. TODO: Learn to customize it.
+
+        #We made a basic button. TODO: Learn to customize it. This is a test button, just mess around.
         self.button = QPushButton("Press Me!", self.central_widget)
         self.button.setGeometry(0, 0, 100, 100) #Define a button's size, otherwise it fills screen
         self.button.setCheckable(True)
@@ -51,20 +205,32 @@ class MainWindow(QMainWindow):
 
 
 
-    #Define a behavior
+    #Define a button behavior
     def the_button_was_clicked(self, checked=False):
         print("Clicked!")
         self.button.setText("I'm imPRESSED")
         self.setWindowTitle("This got changed too!")
+        note = draggableNote(self.central_widget)
+        offset = len(self.noteList) * 10 #This creates notes in slightly different positions
+        note.move(250 + offset, 150 + offset)
+        self.noteList.append(note) #This appends the pinn to the noteList.
+        note.show()
 
-    #Define a second behavior
+    #Define imagePinn creation behavior TODO: make
     def makeImagePinn(self, checked=False):
         self.imageButton.setText("This button will\nhandle I.Pinns")
         self.setWindowTitle("setGeometry: x, y, width, height")
 
+    #Define textPinn creation behavior
     def makeTextPinn(self, checked=False):
         self.textButton.setText("Make this create\na text pinn")
+        note = draggableNote(self.central_widget)
+        offset = len(self.noteList) * 20
+        note.move(250, 150)
+        self.noteList.append(note)
+        note.show()
 
+    #Define soundPinn creation behavior TODO: make
     def makeSoundPinn(self, checked=False):
         self.soundButton.setText("Make this create\na sound pinn")
 
