@@ -7,7 +7,7 @@ import sys
 from PySide6.QtCore import QSize, Qt
 
 #QApplication is needed for events, QWidget has many objects and functions
-from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton
+from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QMenu
 
 
 #This is a first attempt at a draggable note class
@@ -18,6 +18,7 @@ class draggableNote(QWidget): #Custom subclass of QWidget
 
         #Drag offset remembers where in a note a user has clicked. VERY relevant for pinpointing where a click happened.
         self.drag_offset = None
+        self.delete_callback = None  # Set by MainWindow when this note is created
 
         self.setMinimumSize(100, 75)#Minimum note size
         self.resize(200, 150)#This is our default size of new notes
@@ -52,6 +53,19 @@ class draggableNote(QWidget): #Custom subclass of QWidget
                     self.height() - self.resizeHandle.height()-2
                 )
 
+    def showContextMenu(self, global_position):
+        # Open the menu at the mouse pointer, regardless of which part of the note was clicked.
+        menu = QMenu(self)
+        delete_action = menu.addAction("Delete Pin")
+        selected_action = menu.exec(global_position)
+
+        if selected_action == delete_action and self.delete_callback is not None:
+            self.delete_callback(self)  # Delete immediately; no confirmation dialog.
+
+    def contextMenuEvent(self, event):
+        self.showContextMenu(event.globalPos())
+        event.accept()
+
     def resizeEvent(self, event): #This handles resizing of notes
         self.topBar.setGeometry(2, 2, self.width() - 4, 25) #The top bar needs to remain consistent across the top!
 
@@ -71,6 +85,10 @@ class draggableNoteBar(QWidget):
         super().__init__(parent)
 
         self.drag_offset = None
+
+    def contextMenuEvent(self, event):
+        self.parentWidget().showContextMenu(event.globalPos())
+        event.accept()
 
     #This is the "what happens when pressed" event
     def mousePressEvent(self, event):
@@ -126,6 +144,10 @@ class noteResize(QWidget):
                 border: 1px solid #8f7d2f;
             }
         """)
+
+    def contextMenuEvent(self, event):
+        self.parentWidget().showContextMenu(event.globalPos())
+        event.accept()
 
     #These are the mouse press events for pressing, holding, and releasing the mouse.
     def mousePressEvent(self, event):
@@ -205,12 +227,20 @@ class MainWindow(QMainWindow):
 
 
 
+    def deletePinn(self, note):
+        # Keep the internal note list in sync with the displayed widgets.
+        if note in self.noteList:
+            self.noteList.remove(note)
+            note.hide()
+            note.deleteLater()  # Qt safely destroys the widget after its current event.
+
     #Define a button behavior
     def the_button_was_clicked(self, checked=False):
         print("Clicked!")
         self.button.setText("I'm imPRESSED")
         self.setWindowTitle("This got changed too!")
         note = draggableNote(self.central_widget)
+        note.delete_callback = self.deletePinn
         offset = len(self.noteList) * 10 #This creates notes in slightly different positions
         note.move(250 + offset, 150 + offset)
         self.noteList.append(note) #This appends the pinn to the noteList.
@@ -225,6 +255,7 @@ class MainWindow(QMainWindow):
     def makeTextPinn(self, checked=False):
         self.textButton.setText("Make this create\na text pinn")
         note = draggableNote(self.central_widget)
+        note.delete_callback = self.deletePinn
         offset = len(self.noteList) * 20
         note.move(250, 150)
         self.noteList.append(note)
