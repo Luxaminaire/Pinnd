@@ -48,9 +48,15 @@ def darkenHex(color, factor):
 def assetCreationHandler(filepath):
     fileName, fileExtension = os.path.splitext(os.path.basename(filepath)) # Preserve file extension
     assetName = f"{int(time.time())}_{fileName}{fileExtension}"            # Add timestamp so that multiple Pinns can
-    path = Path.cwd() / "assets" / assetName                    # import files with the same name.
-    newPath = shutil.copyfile(filepath, path)
-    return str(newPath)
+    path = Path.cwd() / "assets" / assetName                               # import files with the same name.
+
+    sourceDir = Path(filepath).parent
+    targetDir = Path(path).parent
+
+    if sourceDir == targetDir: return filepath
+    else:
+        newPath = shutil.copyfile(filepath, path)
+        return str(newPath)
 
 class Pinn(QWidget):
     backgroundColor = defaultBackgroundColor
