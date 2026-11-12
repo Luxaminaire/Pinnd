@@ -48,7 +48,7 @@ def darkenHex(color, factor):
 def assetCreationHandler(filepath):
     fileName, fileExtension = os.path.splitext(os.path.basename(filepath)) # Preserve file extension
     assetName = f"{int(time.time())}_{fileName}{fileExtension}"            # Add timestamp so that multiple Pinns can
-    path = Path(__file__).parent / "assets" / assetName                    # import files with the same name.
+    path = Path.cwd() / "assets" / assetName                    # import files with the same name.
     newPath = shutil.copyfile(filepath, path)
     return str(newPath)
 
@@ -190,14 +190,14 @@ class Pinn(QWidget):
             """
             self.bodyAudio.play.setStyleSheet(buttonStyle)
             if self.bodyAudio.paused:
-                pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioPlay.png"), self.bodyColor)
+                pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioPlay.png"), self.bodyColor)
                 self.bodyAudio.play.setIcon(QIcon(pixmap))
             else:
-                pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioPause.png"), self.bodyColor)
+                pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioPause.png"), self.bodyColor)
                 self.bodyAudio.play.setIcon(QIcon(pixmap))
-            pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioStop.png"), self.bodyColor)
+            pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioStop.png"), self.bodyColor)
             self.bodyAudio.stop.setIcon(QIcon(pixmap))
-            pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioLoop.png"), self.bodyColor)
+            pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioLoop.png"), self.bodyColor)
             self.bodyAudio.loop.setIcon(QIcon(pixmap))
 
             if self.bodyAudio.looped:
@@ -258,15 +258,15 @@ class bodyAudio(QWidget):
         self.looped = False
 
         self.play = QPushButton()
-        pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioPlay.png"), self.parentWidget().bodyColor)
+        pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioPlay.png"), self.parentWidget().bodyColor)
         self.play.setIcon(QIcon(pixmap))
 
         self.stop = QPushButton()
-        pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioStop.png"), self.parentWidget().bodyColor)
+        pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioStop.png"), self.parentWidget().bodyColor)
         self.stop.setIcon(QIcon(pixmap))
 
         self.loop = QPushButton()
-        pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioLoop.png"), self.parentWidget().bodyColor)
+        pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioLoop.png"), self.parentWidget().bodyColor)
         self.loop.setIcon(QIcon(pixmap))
 
         buttonStyle = f"""
@@ -331,12 +331,12 @@ class bodyAudio(QWidget):
 
     def playClick(self):
         if self.paused:
-            pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioPause.png"), self.parentWidget().bodyColor)
+            pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioPause.png"), self.parentWidget().bodyColor)
             self.play.setIcon(QIcon(pixmap))
             self.player.play()
             self.paused = False
         else:
-            pixmap = recolor(QPixmap(Path(__file__).parent / "icons" / "audioPlay.png"), self.parentWidget().bodyColor)
+            pixmap = recolor(QPixmap(Path.cwd() / "icons" / "audioPlay.png"), self.parentWidget().bodyColor)
             self.play.setIcon(QIcon(pixmap))
             self.player.pause()
             self.paused = True
