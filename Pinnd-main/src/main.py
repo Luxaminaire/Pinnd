@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QSize, QByteArray, QSaveFile, QIODevice
 from PySide6.QtGui import QPixmap, QFont
-from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QMenu, QFileDialog, QColorDialog
+from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QMenu, QFileDialog, QColorDialog, QPushButton, QLabel
 import pinn
 from pinn import Pinn
 import atexit
@@ -23,6 +23,52 @@ class MainWindow(QMainWindow):
         self.window.setStyleSheet(f"""
             QWidget {{background-color: {self.backgroundColor}; border: none;}}
         """)
+
+        #Elliot's default background (MUST be declared in init for buttons to work)
+        self.background = QLabel(self.window) #Creates a 'label', makes window its parent
+        self.background.setPixmap(QPixmap("icons/CorkBoard1.jpg")) #QPixmap objects are our 'backgrounds'
+        self.background.setScaledContents(True) #Pixmap is told to fit the entire area, aka window's Geometry.
+        self.background.setGeometry(0, 0, 1200, 800)
+        self.background.lower() #The background must be send to the lowest layer of mainwindow.
+        
+        #Elliot's barrage of buttons. (ALSO must be declared in init)
+        self.cork1Button = QPushButton("", self.window) #Text is currently removed
+        self.cork1Button.setGeometry(150, 0, 50, 50) #Define a button's size, otherwise it fills screen
+        #self.button.setCheckable(True) #setCheckable allows a button to 'stay' pressed. Aesthetic, it can still be clicked.
+        self.cork1Button.clicked.connect(self.toCork) #Determines which function is used on click
+        #self.button.setIcon(QIcon("CorkBoard1.jpg")) #This is how you use QIcon to set icons! NOT same as Stylesheets
+        self.cork1Button.setStyleSheet("""border-image: url("icons/CorkBoard1.jpg")""") #border-image: url("") is stylesheet for 'use this image'
+
+        #corkAltButton button
+        self.cork3Button = QPushButton("", self.window)
+        self.cork3Button.setGeometry(50, 0, 50, 50)
+        self.cork3Button.clicked.connect(self.toCork3)
+        self.cork3Button.setStyleSheet("""border-image: url("icons/CorkBoard3.jpg")""")
+
+        #paperButton button
+        self.paperButton = QPushButton("", self.window)
+        self.paperButton.setGeometry(100, 0, 50, 50)
+        self.paperButton.clicked.connect(self.toPaper)
+        self.paperButton.setStyleSheet("""border-image: url("icons/GrainyPaper.jpg") """)
+
+        #woodButton button
+        self.woodButton = QPushButton("", self.window)
+        self.woodButton.setGeometry(200, 0, 50, 50)
+        self.woodButton.clicked.connect(self.toWood)
+        self.woodButton.setStyleSheet("""border-image: url("icons/Wood.jpg") """)
+
+        #MakeCat background
+        self.catButton = QPushButton("", self.window)
+        self.catButton.setGeometry(250, 0, 50, 50)
+        self.catButton.clicked.connect(self.toCat)
+        self.catButton.setStyleSheet("""border-image: url("icons/WhiteCat.jpg") """)
+
+        #No background
+        self.noButton = QPushButton("", self.window)
+        self.noButton.setGeometry(0, 0, 50, 50)
+        self.noButton.clicked.connect(self.toBlank)
+        self.noButton.setStyleSheet("""border-image: url("") """)
+
 
     def showContextMenu(self, position):
         menu = QMenu(self)
@@ -83,6 +129,48 @@ class MainWindow(QMainWindow):
             color = QColorDialog.getColor()
             self.recolor(bgColor=color.name())
 
+
+
+
+    #Elliot's barrage of button event definitions
+    def toCork(self, checked=False):
+        #print("Clicked!") #This causes 'clicked' to print in terminal. Tests to see if it works
+        self.background.setPixmap(QPixmap("icons/CorkBoard1.jpg"))  #background is the name of our widget from earlier, set its 'pixmap' to this img
+        self.background.setScaledContents(True) #Scaled contents just scales the image to geometry.
+        self.background.setGeometry(0, 0, 1200, 800)
+        self.background.lower() #Make backgrounds low priority to not cover buttons!
+    
+    def toCork3(self, checked=False):
+        self.background.setPixmap(QPixmap("icons/CorkBoard3.jpg")) 
+        self.background.setScaledContents(True) 
+        self.background.setGeometry(0, 0, 1200, 800)
+        self.background.lower() 
+
+    #Define textPinn creation behavior
+    def toPaper(self, checked=False):
+        self.background.setPixmap(QPixmap("icons/GrainyPaper.jpg")) 
+        self.background.setScaledContents(True) 
+        self.background.setGeometry(0, 0, 1200, 800)
+        self.background.lower() 
+
+    def toCat(self, checked=False):
+        self.background.setPixmap(QPixmap("icons/WhiteCat.jpg")) 
+        self.background.setScaledContents(True) 
+        self.background.setGeometry(0, 0, 1200, 800)
+        self.background.lower()
+
+    #Wood background event declaration
+    def toWood(self, checked=False):
+        self.background.setPixmap(QPixmap("icons/Wood.jpg"))
+        self.background.setScaledContents(True) 
+        self.background.setGeometry(0, 0, 1200, 800)
+        self.background.lower()
+
+    #Erase images
+    def toBlank(self, checked=False):
+        self.background.setPixmap(QPixmap("")) #Set Pixmap to nothing to 'erase' backgrounds
+        
+
     def recolor(self, bgColor=None, textColor=None):
         if bgColor is not None: self.backgroundColor = bgColor
         if textColor is not None: self.textColor = textColor
@@ -101,7 +189,7 @@ class MainWindow(QMainWindow):
 
 app = QApplication(sys.argv)
 window = MainWindow()
-window.setWindowTitle("Untitled Pinnboard")
+window.setWindowTitle("Pinnboard Alpha Test")
 window.resize(1000, 700)
 window.show()
 
