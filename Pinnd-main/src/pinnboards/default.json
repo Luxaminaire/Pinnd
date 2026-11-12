@@ -1,0 +1,72 @@
+[
+    {
+        "textColor": "#000000",
+        "backgroundColor": "#996A3C"
+    },
+    {
+        "backgroundColor": "#FFCC5E",
+        "headerText": "New Pinn",
+        "headerColor": "#000000",
+        "bodyColor": "#000000",
+        "headerSize": 12,
+        "bodySize": 10,
+        "headerFont": "Arial",
+        "bodyFont": "Arial",
+        "bodyText": "",
+        "bodyImage": null,
+        "bodyAudio": null,
+        "filepath": null,
+        "position": {
+            "x": 246,
+            "y": 179
+        },
+        "size": {
+            "x": 226,
+            "y": 148
+        }
+    },
+    {
+        "backgroundColor": "#FFCC5E",
+        "headerText": "New Pinn",
+        "headerColor": "#000000",
+        "bodyColor": "#000000",
+        "headerSize": 12,
+        "bodySize": 10,
+        "headerFont": "Arial",
+        "bodyFont": "Arial",
+        "bodyText": null,
+        "bodyImage": "Image",
+        "bodyAudio": null,
+        "filepath": "C:/Users/ellio/Desktop/Pinnd-main/src/assets/GrainyPaper.jpg",
+        "position": {
+            "x": 350,
+            "y": 166
+        },
+        "size": {
+            "x": 350,
+            "y": 280
+        }
+    },
+    {
+        "backgroundColor": "#FFCC5E",
+        "headerText": "New Pinn",
+        "headerColor": "#000000",
+        "bodyColor": "#000000",
+        "headerSize": 12,
+        "bodySize": 10,
+        "headerFont": "Arial",
+        "bodyFont": "Arial",
+        "bodyText": null,
+        "bodyImage": "Image",
+        "bodyAudio": null,
+        "filepath": "C:/Users/ellio/Desktop/Pinnd-main/src/assets/WhiteCat.JPG",
+        "position": {
+            "x": 674,
+            "y": 90
+        },
+        "size": {
+            "x": 172,
+            "y": 155
+        }
+    }
+]

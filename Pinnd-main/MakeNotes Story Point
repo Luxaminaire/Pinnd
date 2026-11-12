@@ -1,0 +1,96 @@
+#This is the Python pseudo-code for creating the 3 basic note types.
+#We do not have a story point for how the Pinnboard works yet
+
+#Python pseudocode:
+
+#need to define what happens when clicking where
+class clickListener { 
+	define area listener is active
+	define function triggered by listener
+	#Need at least 4 of these for note creation functions and soundNote
+}
+
+
+
+class textNote {
+	noteID
+	headerString
+	bodyString
+	locationX
+	locationY
+	sizeX
+	sizeY
+	layerLevel
+}
+
+
+class imageNote{
+	noteID
+	filePathToImage
+	sizeX
+	sizeY
+	locationX
+	locationY
+	sizeOfImageX
+	sizeOfImageY
+	layerLevel
+	function: if image is larger than note, update note size
+}
+
+class soundNote {
+	noteID
+	filePathtoSound
+	sizeX
+	sizeY
+	locationX
+	locationY
+	layerLevel
+	headerString
+	playBar
+	clickListener() #needs to be able to create a clickListener for play button
+}
+
+
+
+noteArray = [ ];
+
+#Add notes to an array of notes. Used for tracking and layerLevels
+#layerLevel will be related to order in array, prevent orderLevel from being ==
+
+def addToNoteArray(noteID) {
+	noteArray.append(noteID)
+}
+
+def textNoteCreator() {
+	create text note object with defaut values, including spawn location
+	Generate a noteID
+	addToNoteArray(this)
+}
+
+def imageCreator() {
+	create image note object ready to receive image and default size values
+	generate a noteID
+	addToNoteArray(this)
+}
+
+def soundNoteCreator() {
+	create sound note object with default values
+	generate a noteID
+	addToNoteArray(this)
+}
+
+#End notes: CSS will contain instructions for font choice and color,
+#since that is a CSS coding concern, and not a back-end concern.
+
+#True save() functionality not included yet.
+
+#Pinnboard functionality like user "camera" is not included here
+#Pinnboard pixel size and attributes has not been included here either
+
+#Will need to know what pinnboard size is to know what is 'in bounds'
+#Therefore, pinnboard functionality is probably higher 'priority' than note creation
+
+#Default note spawn location can probably be 0, 0 while testing
+
+#Other possible listeners include auto-moving notes if touching out of bounds
+#But this might just be a backup until we figure out an 'infinite' Pinnboard.
