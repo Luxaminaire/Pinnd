@@ -143,6 +143,7 @@ def Save():
 
 def Restore():
     path = Path.cwd() / "pinnboards" / "default.json"
+    print(Path.cwd())
     if path.is_file():
         with open(path, "r", encoding="utf-8") as save:
             data = json.load(save)
