@@ -6,11 +6,14 @@ Project Description: Our project, Pinn-D, is an offline program that allows user
 
 This is for Roya's CS370 class at SSU!!
 
-This application is locally saved and has multiple elements
-1. Corkboard background that expands indefinitely
-2. Pins of different types including:
-3. Video Pins
-4. Image Pins
-5. Voice Memo Pins
-6. Sticky Notes
-7. Password Notes
+This application is locally saved and will allow for:
+- A corkboard background that expands indefinitely
+- Pinns of varying types, including:
+  - Image Pinns
+  - Audio Pinns
+  - Text Pinns
+  - Password-protected Pinns
+- Full customization of Pinns, including:
+  - Moving around the board
+  - Resizing (within limits)
+  - Changing background colors & text properties
