@@ -1,52 +1,73 @@
 """
-# This class is replaced by Rosemary's pinn.py file. move on to the search part
+searchFunction.py - Search bar for Pinn-D.
 
-# Defines a class Pinn to represent an individual Pinn
-class Pinn:
-  """A single Pinn with a title and content."""
-  
-  # The constructor method that initializes a new Pinn object, expecting strings for title & content
-  def __init__(self, title: str, content: str):
-    self.title = title
-    self.content = content
+Searches the title (and body text, for Text Pinns) of every Pinn in pinn.pinnList.
+Pinns that match stay normal; everything else fades out. Clearing the box restores all Pinns.
 
-  # Defines how the Pinn object is represented as a string
-  def __repr__(self):
-    return f"Pinn(title='{self.title}')"
+Usage in main.py:
+    from search import SearchToolBar
+    self.searchBar = SearchToolBar(self)
+    self.addToolBar(self.searchBar)
+"""
 
-# Defines a class named PinnBoard to manage a collection of Pinns
-class PinnBoard:
-  """Board holding a collection of pinns and allows searching"""
+from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtWidgets import QToolBar, QLineEdit, QGraphicsOpacityEffect
 
-  # The constructor method that initializes a new PinnBoard object
-  def __init__(self):
-    # Creates an empty list attribute to store the Pinn objects
-    self.pinns = []
+import pinn
 
-  # Defines a method to add a new Pinn to the board, expecting a Pinn object
-  def add_pinn(self, pinn: "Pinn"):
-    """Adds a Pinn to the board."""
-    # Append the passed Pinn object to the board's internal list of pins
-    self.pins.append(pinn)
-'''
+FADED_OPACITY = 0.25  # How see-through non-matching Pinns become (0.0 - 1.0)
 
 
-# Defines a method to search the board, expecting a string query and returning a list
-    def search(self, search_query: str) -> list:
-        """Searches the board for a keyword in titles or content."""
-        
-        # Check if the search query is empty or None
-        if not search_query:
-            # If the search query is empty, immediately return an empty list
-            return []
-            
-        # Convert the search query to lowercase to ensure the search is case-insensitive
-        search_term = search_query.lower()
-        
-        # Return a dynamically generated list (using a list comprehension) containing the search results
-        return [
-            # Grab the specific 'pinn' object from the iteration...
-            pinn for pinn in self.pins
-            # ...but only include it if the lowercase search term exists in the lowercase title OR lowercase content
-            if search_term in pinn.title.lower() or search_term in pinn.content.lower()
-        ]
+def pinnText(item):
+    """Return (title, body) for a Pinn. Image/Audio Pinns have no body text."""
+    title = item.topBar.text.text()
+    body = item.bodyText.text.toPlainText() if item.bodyText is not None else ""
+    return title, body
+
+
+def pinnMatches(item, term):
+    """Case-insensitive check of a Pinn's title and body against a lowercase search term."""
+    if not term:
+        return True
+    title, body = pinnText(item)
+    return term in title.lower() or term in body.lower()
+
+
+def applySearch(query):
+    """Fade every Pinn that doesn't match the query. An empty query restores everything."""
+    term = query.strip().lower()
+    for item in pinn.pinnList:
+        effect = item.graphicsEffect()
+        if pinnMatches(item, term):
+            if effect is not None:
+                item.setGraphicsEffect(None)  # Back to normal
+        else:
+            if effect is None:
+                effect = QGraphicsOpacityEffect(item)
+                effect.setOpacity(FADED_OPACITY)
+                item.setGraphicsEffect(effect)
+
+
+class SearchToolBar(QToolBar):
+    def __init__(self, parent):
+        super().__init__("Search", parent)
+        self.setMovable(False)
+
+        self.box = QLineEdit()
+        self.box.setPlaceholderText("Search Pinns... (Ctrl+F)")
+        self.box.setClearButtonEnabled(True)
+        self.box.setFixedWidth(250)
+        self.box.textChanged.connect(applySearch)
+        self.addWidget(self.box)
+
+        # Ctrl+F jumps to the search box from anywhere in the window
+        self.shortcut = QShortcut(QKeySequence("Ctrl+F"), parent)
+        self.shortcut.activated.connect(self.focusSearch)
+
+    def focusSearch(self):
+        self.box.setFocus()
+        self.box.selectAll()
+
+    def refresh(self):
+        """Re-apply the current search. Call this after creating a new Pinn."""
+        applySearch(self.box.text())
