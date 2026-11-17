@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QMenu, QFileDi
 import pinn
 from pinn import Pinn
 import atexit
+from searchFunction import SearchToolBar #For searchFunction 
 
 class MainWindow(QMainWindow):
     backgroundColor = "#996A3C"
@@ -23,6 +24,9 @@ class MainWindow(QMainWindow):
         self.window.setStyleSheet(f"""
             QWidget {{background-color: {self.backgroundColor}; border: none;}}
         """)
+        
+        self.searchBar = SearchToolBar(self) #Search
+        self.addToolBar(self.searchBar) #Search
 
     def showContextMenu(self, position):
         menu = QMenu(self)
