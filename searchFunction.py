@@ -5,7 +5,7 @@ Searches the title (and body text, for Text Pinns) of every Pinn in pinn.pinnLis
 Pinns that match stay normal; everything else fades out. Clearing the box restores all Pinns.
 
 Usage in main.py:
-    from search import SearchToolBar
+    from searchFunction import SearchToolBar
     self.searchBar = SearchToolBar(self)
     self.addToolBar(self.searchBar)
 """
