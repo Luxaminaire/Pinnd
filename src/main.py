@@ -1,43 +1,184 @@
+import json
+import sys
+from pathlib import Path
+
+from PySide6.QtCore import QSize, QByteArray, QSaveFile, QIODevice
+from PySide6.QtGui import QPixmap, QFont
+from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QMenu, QFileDialog, QColorDialog
 import pinn
+from pinn import Pinn
+import atexit
 
-pinnResizeTolerance = 15
-pinnDragTolerance = 15
+defaultPinnboardBackgroundColor = "#996A3C"
+defaultPinnboardTextColor = "#000000"
 
-testDragPos = [250,-30]
-testDragDuration = 20
+class MainWindow(QMainWindow):
+    backgroundColor = defaultPinnboardBackgroundColor
+    textColor = defaultPinnboardTextColor
 
-def clickBoard(xPos, yPos):
-    hitPinns = []
-    for note in pinn.pinnList:
-        if abs(xPos - note.xPos) < note.xScale / 2 and abs(yPos - note.yPos) < note.yScale / 2:
-            hitPinns.append(note)
-    hitPinns.sort(key = lambda hitPinn: hitPinn.layer) # Sorted by layer to prioritize the frontmost Pinns
-    if len(hitPinns) > 0:
-        selectedPinn = hitPinns[0]
-        xOffset = abs(xPos - selectedPinn.xPos) # Storing these offsets and passing them to the drag function ensures that Pinns remain
-        yOffset = abs(yPos - selectedPinn.yPos) # in the same position relative to the mouse cursor, even if dragged at high speeds.
-        xMaxOffset = (selectedPinn.xScale / 2)
-        yMaxOffset = (selectedPinn.yScale / 2)
-        if xPos >= selectedPinn.xPos + xMaxOffset - pinnResizeTolerance and yPos >= selectedPinn.yPos + yMaxOffset - pinnResizeTolerance:
-            print("Resize attempt detected") # Code for resizing a Pinn will be implemented later
-        elif xOffset >= xMaxOffset - pinnDragTolerance or yOffset >= yMaxOffset - pinnDragTolerance:
-            dragPinn(selectedPinn,xOffset,yOffset)
-        else:
-            print("Edit attempt detected") # Code for editing Pinn text will be implemented later
-    else:
-        print("No pinn found") # Code for clicking the Pinnboard directly will be implemented later
+    def __init__(self):
+        super().__init__()
+        self.setMouseTracking(True)
+        self.setMinimumSize(QSize(400, 400))
+        self.window = QWidget()
+        self.setCentralWidget(self.window)
 
-def dragPinn(draggedPinn,xOffset,yOffset):
-    draggedPinn.move(testDragPos[0] - xOffset, testDragPos[1] - yOffset)
-    # Replace with a loop that repeats until mouse button is released once the backend is connected to the UI
+        self.window.setStyleSheet(f"""
+            QWidget {{background-color: {self.backgroundColor}; border: none;}}
+        """)
 
-testPinn = pinn.textPinn("Test Pinn", "Test Header", "This is a body text!")
+    def showContextMenu(self, position): # Allows users to create Pinns and edit the background.
+        menu = QMenu(self)
+        menu.setStyleSheet( # Inherit colors from the Pinnboard itself.
+            f"""
+            QMenu {{background-color: {pinn.darkenHex(self.backgroundColor, 0.88)}; border: none;}}
+            QMenu::item {{color: {self.textColor}; background-color: {pinn.darkenHex(self.backgroundColor, 0.88)};}}
+            QMenu::item:selected {{color: {self.textColor}; background-color: {pinn.darkenHex(self.backgroundColor, 0.74)};}}
+            QMenu::separator {{background:{self.textColor}; height: 1px; margin-top: 5px; margin-bottom: 5px;}}
+            """
+        )
 
-clickBoard(300,0) # Test clicking where there is no Pinn
-clickBoard(120,220) # Test clicking the bottom right corner of the Pinn to test resize attempt detection
-clickBoard(0,0) # Test clicking the center of the Pinn to test edit attempt detection
-clickBoard(120,0) # Test clicking near the edge of the Pinn to initiate a drag using dragPinn()
+        menu.setFixedWidth(150)
+        font = QFont(pinn.defaultFont, 10)
+        font.setBold(True)
 
-print(f'Pinn "{testPinn.name}" is now at position ({testPinn.xPos}, {testPinn.yPos})!')
-# Should display the Pinn being at the location (130, -30) due to the mock drag position
-# and the offset of the mock cursor compared to the Pinn's initial position
+        textPinn = menu.addAction("Text Pinn")
+        imagePinn = menu.addAction("Image Pinn")
+        audioPinn = menu.addAction("Audio Pinn")
+        menu.addSeparator()
+        textColor = menu.addAction("Text Color")
+        bgColor = menu.addAction("Background Color")
+
+        textPinn.setFont(font)
+        imagePinn.setFont(font)
+        audioPinn.setFont(font)
+        textColor.setFont(font)
+        bgColor.setFont(font)
+
+        action = menu.exec(position)
+        if action == textPinn:
+            note = Pinn(self.window, "Text", None, False) # No files are needed for Text Pinns.
+            local_pos = self.mapFromGlobal(position)
+            note.move(local_pos)
+            pinn.pinnList.append(note)
+        if action == imagePinn:
+            filepath, _ = QFileDialog.getOpenFileName( # User must upload an image file to create an Image Pinn.
+                self, "Select an Image", "", "Image Files (*.png *.jpg *.bmp *.gif)"
+            )
+            if filepath:
+                note = Pinn(self.window, "Image", filepath, False)
+                local_pos = self.mapFromGlobal(position)
+                note.move(local_pos)
+                pinn.pinnList.append(note)
+        if action == audioPinn:
+            filepath, _ = QFileDialog.getOpenFileName( # User must upload an audio file to create an Audio Pinn.
+                self, "Select an Audio", "", "Audio Files (*.wav *.mp3)"
+            )
+            if filepath:
+                note = Pinn(self.window, "Audio", filepath, False)
+                local_pos = self.mapFromGlobal(position)
+                note.move(local_pos)
+                pinn.pinnList.append(note)
+        if action == textColor:
+            color = QColorDialog.getColor()
+            self.recolor(textColor=color.name())
+        if action == bgColor:
+            color = QColorDialog.getColor()
+            self.recolor(bgColor=color.name())
+
+    def recolor(self, bgColor=None, textColor=None):
+        if bgColor is not None: self.backgroundColor = bgColor
+        if textColor is not None: self.textColor = textColor
+
+        self.window.setStyleSheet(f"""
+            QWidget {{background-color: {self.backgroundColor}; border: none;}}
+        """)
+
+    def contextMenuEvent(self, event):
+        self.showContextMenu(event.globalPos())
+        event.accept()
+
+    def mousePressEvent(self, event):
+        focus = QApplication.focusWidget()
+        if isinstance(focus, QWidget): focus.clearFocus()
+
+app = QApplication(sys.argv)
+window = MainWindow()
+window.setWindowTitle("Untitled Pinnboard")
+window.resize(1000, 700) # Default Pinnboard size, will be altered later on to allow for infinitely-scrolling boards.
+window.show()
+
+def Save():
+    """Saves the Pinnboard to a file, allowing the user to continue where they left off when they reopen Pinn-D."""
+    data = []
+    data.append({"textColor": window.textColor, "backgroundColor": window.backgroundColor}) # Basic Pinnboard attributes.
+    for item in pinn.pinnList: # Iterate through each Pinn on the board, adding its data to the list.
+        bodyText = None
+        bodyImage = None
+        bodyAudio = None
+        if item.bodyText is not None: bodyText = item.bodyText.text.toPlainText()
+        if item.bodyImage is not None: bodyImage = "Image"
+        if item.bodyAudio is not None: bodyAudio = {"looped": item.bodyAudio.looped} # Audio that has been set to loop should
+        pos = {"x": item.pos().x(), "y": item.pos().y()}                             # remain looped when saving/loading.
+        size = {"x": item.size().width(), "y": item.size().height()}
+
+        data.append({
+            "backgroundColor": item.backgroundColor,
+            "headerText": item.topBar.text.text(),
+            "headerColor": item.headerColor,
+            "bodyColor": item.bodyColor,
+            "headerSize": item.headerSize,
+            "bodySize": item.bodySize,
+            "headerFont": item.headerFont,
+            "bodyFont": item.bodyFont,
+            "bodyText": bodyText,
+            "bodyImage": bodyImage,
+            "bodyAudio": bodyAudio,
+            "filepath": item.filepath,
+            "position": pos,
+            "size": size
+        })
+
+    save = QSaveFile(str(Path.cwd() / "pinnboards" / "default.json"))
+    if save.open(QIODevice.OpenModeFlag.WriteOnly): # Save the full list of data as a JSON file.
+        jsonData = json.dumps(data, indent=4).encode("utf-8")
+        save.write(jsonData)
+        save.commit()
+
+def Restore():
+    """Restores the previous Pinnboard whenever Pinn-D is opened, allowing users to continue where they left off."""
+    path = Path.cwd() / "pinnboards" / "default.json" # Will be replaced once the ability to save multiple boards has
+    if path.is_file():                                # been implemented in the future.
+        with open(path, "r", encoding="utf-8") as save:
+            data = json.load(save)
+
+            for loaded in data:
+                if "textColor" in loaded: # Detect info related to the Pinnboard itself and do not attempt to create a Pinn.
+                    window.backgroundColor = loaded["backgroundColor"]
+                    window.textColor = loaded["textColor"]
+                    window.recolor()
+                else: # Create a Pinn with the given info, setting its "imported" flag to True so that assets are not duplicated.
+                    if loaded["bodyText"] is not None:
+                        note = Pinn(window, "Text", None, True)
+                        note.bodyText.text.setText(loaded["bodyText"])
+                    if loaded["bodyImage"] is not None:
+                        note = Pinn(window, "Image", loaded["filepath"], True)
+                    if loaded["bodyAudio"] is not None:
+                        note = Pinn(window, "Audio", loaded["filepath"], True)
+                        note.bodyAudio.looped = loaded["bodyAudio"]["looped"]
+                    note.backgroundColor = loaded["backgroundColor"]
+                    note.headerColor = loaded["headerColor"]
+                    note.bodyColor = loaded["bodyColor"]
+                    note.headerSize = loaded["headerSize"]
+                    note.bodySize = loaded["bodySize"]
+                    note.headerFont = loaded["headerFont"]
+                    note.bodyFont = loaded["bodyFont"]
+                    note.topBar.text.setText(loaded["headerText"])
+                    note.move(loaded["position"]["x"], loaded["position"]["y"])
+                    note.resize(loaded["size"]["x"], loaded["size"]["y"])
+                    note.recolor()
+                    pinn.pinnList.append(note)
+atexit.register(Save) # Automatically save the Pinnboard when the app is closed.
+Restore() # Automatically restore the previously-saved Pinnboard when the app is opened.
+
+app.exec() # Run the application!
