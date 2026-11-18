@@ -17,3 +17,9 @@ This application is locally saved and will allow for:
   - Moving around the board
   - Resizing (within limits)
   - Changing background colors & text properties
+
+KNOWN ISSUES:
+1. Attempting to save a blank Pinnboard with nothing on it fails.
+2. No support for saving Pinnboards using a SQL database.
+3. Magic numbers for recoloring different parts of a Pinn.
+4. Context Menus become impossible to read when their parent object has the same background color and text color.
