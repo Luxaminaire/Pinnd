@@ -1,0 +1,38 @@
+Pinn-D Tech Debt Audit - November 17th, 2026
+
+1. Image Pinns & Audio Pinns save their full asset filepaths instead of local ones.
+Potential Issue: If a user moves the Pinn-D program’s folder to a different location on their PC, saved Pinnboards will break.
+Smell: Does not precisely match any, closest to Magic Values or Shotgun Surgery.
+Effort: Medium - Will require rewriting a segment of the saving function, but should not be particularly difficult to fix.
+Impact: Medium - Will not affect most users, but if someone happens to move Pinn-D to a different location on their computer, all of their Image/Audio Pinns will break.
+Deliberacy: Deliberate & Prudent - Knowingly coded this way due to limited time before demo. Redesigning the save function to store local filepaths that are immune to moving the Pinn-D folder can be added as a Quick Win.
+Quick Win Designated Fixer: Rosemary Oswald
+
+2. Save() writes data inside the Pinn exporting loop, rather than outside of it.
+Potential Issue: With zero Pinns, the file is never written. If you delete your last Pinn, or only change the board colors, the old save reloads next launch and the deleted Pinn comes back. With N pinns, the file is rewritten N times at exit, which works against nonfunctional requirement 03 from requirements.txt.
+Smell: Does not precisely match any, closest to Long Function.
+Effort: Low - Simple indentation change to fix when file writing occurs in the function.
+Impact: Medium - user is unlikely to completely wipe their Pinnboard, but if they do it could potentially cause errors since the Pinnboard json would remain in an earlier state containing deleted asset filepaths.
+Deliberacy: Accidental - Edge case that was missed while writing & testing the function.
+
+3. Pinn-D doesn’t use a SQL database to store Pinnboard data.
+Potential Issue: If online/cloud functionality is ever added, keeping the current system of JSON saving could lead to less efficient data management, including loading, searching, and managing data. The current system also lacks the structured relationships and data integrity protections that are critical for online functionality, which a SQL database could provide.
+Smell: No counterpart in lesson slides, would be an architectural design issue if online functionality ends up being added without altering the data-saving system too.
+Effort: High - Would require implementing a SQL database, designing tables for Pinnboards and Pinns, and rewriting portions of the saving and loading functions to use SQL queries instead of JSON files.
+Impact: High - While the current JSON system works for a smaller, offline application, a SQL database would be necessary to manage larger amounts of data, support multiple Pinnboards, perform searches, and maintain data consistency if the application implements online/cloud functionality.
+Deliberacy: Deliberate & Prudent - JSON was chosen because it was simpler to implement within the project's time constraints. We recognized that a SQL database would provide a more scalable and structured solution, but prioritized completing the application's core functionality before the demo. Migrating to SQL could be addressed as a future improvement, especially if online functionality is ever added in a later update.
+
+4. The getColor() function contains magic numbers for “header”, “hover”, “corner”, “outline”, and “dark”.
+Potential Issue: Possible minor confusion for future programmers reading the code. These values are only used once, so there is no risk of inconsistency between functions.
+Smell: Magic values
+Effort: Low - A fix would simply require moving these values into constant variables.
+Impact: Low - code is only used in one function and is unlikely to change in the future.
+Deliberacy: Deliberate - Minor code readability concerns are lower priority than major features. Can be quickly & easily fixed if the values are ever needed for multiple functions or if they ever become likely to change.
+
+5. Context Menu remains black when the Pinnboard background is changed to black.
+Potential Issue: If a user changes the Pinnboard background color to black, the context menu remains black, making it difficult or impossible to see and interact with the menu options.
+Smell: Poor UI design, since the context menu does not properly adapt to changes in the background color.
+Effort: Low - Would require modifying the context menu's styling to ensure it remains visible when the background is changed to a dark color. This could be accomplished by adjusting the menu's colors dynamically based on the background color.
+Impact: Medium - Only affects users who choose black or very dark background colors, but significantly impacts usability by making the context menu difficult to see and navigate.
+Deliberacy: Inadvertent - This issue was not anticipated during the initial implementation of the context menu. The styling works with most background colors but does not account for extremely dark colors. Adding dynamic contrast adjustments could be implemented as a quick improvement for accessibility and usability.
+
