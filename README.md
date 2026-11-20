@@ -23,3 +23,8 @@ KNOWN ISSUES:
 2. No support for saving Pinnboards using a SQL database.
 3. Magic numbers for recoloring different parts of a Pinn.
 4. Context Menus become impossible to read when their parent object has the same background color and text color.
+
+AI USAGE POLICY:
+- Any AI-generated or altered code must be fully reviewed by a human before committing.
+- Any usage of AI-generated or altered code must be disclosed in commit description.
+- AI usage is completely prohibited for code involving security or sensitive user data (i.e. password encryption).
